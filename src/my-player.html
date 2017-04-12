@@ -1,0 +1,71 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+
+<dom-module id="my-player">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 16px;
+      }
+    </style>
+		<div class="card">
+      <div class="circle">Q1</div>
+    <h1>{{quiz}}</h1>
+		</div>
+		<template is="dom-repeat" items="{{options}}">
+		<div class="card">
+      <h1>{{item.text}}</h1>
+		</div>
+		</template>
+
+  </template>
+  <script>
+var config = {
+		apiKey: "AIzaSyCwpqabbTlyPq9G26ikbtPQwBvHyJB5VE0",
+		authDomain: "partyquiz-1bf90.firebaseapp.com",
+		databaseURL: "https://partyquiz-1bf90.firebaseio.com/",
+		storageBucket: "partyquiz-1bf90.appspot.com"
+};
+firebase.initializeApp(config);
+var database = firebase.database();
+/*
+database.ref('quiz/3/').set({
+		text: '3問目の本文',
+		options: [
+				{text: '3問目の選択肢A', is_answer: false},
+				{text: '3問目の選択肢B', is_answer: false},
+				{text: '3問目の選択肢C', is_answer: false},
+				{text: '3問目の選択肢D', is_answer: true}				
+		]
+});		
+*/
+class MyPlayer extends Polymer.Element {
+		static get is() { return 'my-player'; }
+		static get properties() {
+				return {
+ 						quiz: {
+								type: String,
+								},
+						options: {
+								type: Array,
+						}
+				}
+		}
+		ready() {
+				super.ready();
+				var quiz_val;
+				var quiz_data = firebase.database().ref('quiz/2/');
+				var t = this;
+				quiz_data.on('value', function(snapshot) {
+						quiz_val = snapshot.val();
+						t.set('quiz',quiz_val.text);
+						t.set('options',quiz_val.options);
+				});
+		}
+
+}
+customElements.define(MyPlayer.is, MyPlayer);
+  </script>
+</dom-module>
